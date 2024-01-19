@@ -2,7 +2,7 @@ import Post from '../models/post.model.js';
 import { errorHandler } from '../utils/error.js';
 
 export const create = async (req, res, next) => {
-  if (!req.user.isAdmin) {
+  if (!req.user.isAdmin || !req.user.isMod) {
     return next(errorHandler(403, 'You are not allowed to create a post'));
   }
   if (!req.body.title || !req.body.content) {
@@ -27,6 +27,7 @@ export const create = async (req, res, next) => {
 };
 
 export const getposts = async (req, res, next) => {
+  console.log(req.query);
   try {
     const startIndex = parseInt(req.query.startIndex) || 0;
     const limit = parseInt(req.query.limit) || 9;

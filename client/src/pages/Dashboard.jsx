@@ -6,8 +6,10 @@ import DashPosts from '../components/DashPosts';
 import DashUsers from '../components/DashUsers';
 import DashComments from '../components/DashComments';
 import DashboardComp from '../components/DashboardComp';
+import { useSelector } from 'react-redux';
 
 export default function Dashboard() {
+  const { currentUser} = useSelector((state) => state.user);
   const location = useLocation();
   const [tab, setTab] = useState('');
   useEffect(() => {
@@ -32,6 +34,10 @@ export default function Dashboard() {
       {/* comments  */}
       {tab === 'comments' && <DashComments />}
       {/* dashboard comp */}
+      {
+        tab === '' && (currentUser.isAdmin || currentUser.isMod) &&  <DashboardComp /> 
+        
+      }
       {tab === 'dash' && <DashboardComp />}
     </div>
   );
