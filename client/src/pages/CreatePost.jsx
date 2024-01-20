@@ -19,48 +19,73 @@ export default function CreatePost() {
   const [imageUploadError, setImageUploadError] = useState(null);
   const [formData, setFormData] = useState({});
   const [publishError, setPublishError] = useState(null);
-
+  let downloadedURL="";
   const navigate = useNavigate();
 
-  const handleUpdloadImage = async () => {
-    try {
-      if (!file) {
-        setImageUploadError('Please select an image');
-        return;
-      }
-      setImageUploadError(null);
-      const storage = getStorage(app);
-      const fileName = new Date().getTime() + '-' + file.name;
-      const storageRef = ref(storage, fileName);
-      const uploadTask = uploadBytesResumable(storageRef, file);
-      uploadTask.on(
-        'state_changed',
-        (snapshot) => {
-          const progress =
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          setImageUploadProgress(progress.toFixed(0));
-        },
-        (error) => {
-          setImageUploadError('Image upload failed');
-          setImageUploadProgress(null);
-        },
-        () => {
-          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-            setImageUploadProgress(null);
+  const handleUpdloadImage = async () => {    
+    // service firebase.storage {
+    //   match /b/{bucket}/o {
+    //     match /{allPaths=**} {
+    //       allow read;
+    //       allow write: if
+    //       request.resource.size < 2 * 1024 * 1024 &&
+    //       request.resource.contentType.matches('image/.*')
+    //     }
+    //   }
+    // }
+    return new Promise (async(resolve,reject) =>{
+////////////////////////////
+          try {
+            if (!file) {
+              setImageUploadError('Please select an image');
+              return;            
+            }
             setImageUploadError(null);
-            setFormData({ ...formData, image: downloadURL });
-          });
-        }
-      );
-    } catch (error) {
-      setImageUploadError('Image upload failed');
-      setImageUploadProgress(null);
-      console.log(error);
-    }
+            const storage = getStorage(app);
+            const fileName = new Date().getTime() + '-' + file.name;
+            const storageRef = ref(storage, fileName);
+            const uploadTask = uploadBytesResumable(storageRef, file);
+            uploadTask.on(
+              'state_changed',
+              (snapshot) => {
+                const progress =
+                  (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                setImageUploadProgress(progress.toFixed(0));
+              },
+              (error) => {
+                setImageUploadError('Image upload failed');
+                setImageUploadProgress(null);
+              },
+              () => {
+                getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                  setImageUploadProgress(null);
+                  setImageUploadError(null);
+                  downloadedURL=downloadURL;
+                  console.log(downloadURL);
+                  setFormData({ ...formData, image: downloadURL });
+                  resolve();
+                });
+              }
+            );
+          } catch (error) {
+            setImageUploadError('Image upload failed');
+            setImageUploadProgress(null);
+            reject('Image upload failed');
+            console.log(error);
+          }
+/////////////////////////////
+    }) 
+
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      if(file){
+        await handleUpdloadImage();
+        formData["image"]=downloadedURL;
+      }
+      
+      
       const res = await fetch('/api/post/create', {
         method: 'POST',
         headers: {
@@ -114,12 +139,13 @@ export default function CreatePost() {
             accept='image/*'
             onChange={(e) => setFile(e.target.files[0])}
           />
-          <Button
+          { imageUploadProgress &&
+            <Button
             type='button'
             gradientDuoTone='purpleToBlue'
             size='sm'
             outline
-            onClick={handleUpdloadImage}
+            // onClick={handleUpdloadImage}
             disabled={imageUploadProgress}
           >
             {imageUploadProgress ? (
@@ -133,6 +159,8 @@ export default function CreatePost() {
               'Upload Image'
             )}
           </Button>
+          }
+
         </div>
         {imageUploadError && <Alert color='failure'>{imageUploadError}</Alert>}
         {formData.image && (
