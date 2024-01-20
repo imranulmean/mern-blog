@@ -1,7 +1,7 @@
 import { Avatar, Button, Dropdown, Navbar, TextInput } from 'flowbite-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AiOutlineSearch } from 'react-icons/ai';
-import { FaMoon, FaSun } from 'react-icons/fa';
+import { FaMoon, FaSun, FaBell } from 'react-icons/fa';
 import { useSelector, useDispatch } from 'react-redux';
 import { toggleTheme } from '../redux/theme/themeSlice';
 import { signoutSuccess } from '../redux/user/userSlice';
@@ -81,6 +81,25 @@ export default function Header() {
         >
           {theme === 'light' ? <FaSun /> : <FaMoon />}
         </Button>
+        {/* ////////// Notification //////// */}
+          <Dropdown
+            arrowIcon={false}     
+            inline
+            label={<FaBell />} 
+          >
+            <Dropdown.Header>
+                Notification
+            </Dropdown.Header>
+            <Dropdown.Divider />  
+            <Link>
+              <Dropdown.Item>Notification 1</Dropdown.Item>
+            </Link>
+            <Link>
+              <Dropdown.Item>Notification 2</Dropdown.Item>
+            </Link>
+
+        </Dropdown>
+        {/* //////// Notification //////// */}
         {currentUser ? (
           <Dropdown
             arrowIcon={false}
