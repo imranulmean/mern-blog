@@ -11,12 +11,18 @@ export default function PostPage() {
   const [error, setError] = useState(false);
   const [post, setPost] = useState(null);
   const [recentPosts, setRecentPosts] = useState(null);
-
   useEffect(() => {
     const fetchPost = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`/api/post/getposts?slug=${postSlug}`);
+        let url="";
+        if(!postSlug.includes('-')){
+            url=`/api/post/getposts?postId=${postSlug}`;
+        }
+        else{
+          url=`/api/post/getposts?slug=${postSlug}`
+        }
+        const res = await fetch(url);
         const data = await res.json();
         if (!res.ok) {
           setError(true);
