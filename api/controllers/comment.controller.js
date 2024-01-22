@@ -1,4 +1,6 @@
 import Comment from '../models/comment.model.js';
+import Notification from '../models/notification.model.js';
+import Post from '../models/post.model.js';
 
 export const createComment = async (req, res, next) => {
   try {
@@ -16,7 +18,14 @@ export const createComment = async (req, res, next) => {
       userId,
     });
     await newComment.save();
-
+    const post= await Post.findById({_id:postId});
+    const newNotification= new Notification({
+        firstUserId:post.userId,
+        secUserId:userId,
+        postId:postId,
+        commentId:newComment._id
+     });
+     await newNotification.save();
     res.status(200).json(newComment);
   } catch (error) {
     next(error);

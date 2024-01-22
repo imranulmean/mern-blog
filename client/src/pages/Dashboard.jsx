@@ -6,6 +6,7 @@ import DashPosts from '../components/DashPosts';
 import DashUsers from '../components/DashUsers';
 import DashComments from '../components/DashComments';
 import DashboardComp from '../components/DashboardComp';
+import DashNotifications from '../components/DashNotifications';
 import { useSelector } from 'react-redux';
 
 export default function Dashboard() {
@@ -33,6 +34,7 @@ export default function Dashboard() {
       {tab === 'users' && <DashUsers />}
       {/* comments  */}
       {tab === 'comments' && <DashComments />}
+      {tab === 'notifications' && <DashNotifications />}
       {/* dashboard comp */}
       {
         tab === '' && (currentUser.isAdmin || currentUser.isMod) &&  <DashboardComp /> 

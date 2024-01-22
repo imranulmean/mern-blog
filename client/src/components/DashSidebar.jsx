@@ -6,6 +6,7 @@ import {
   HiOutlineUserGroup,
   HiAnnotation,
   HiChartPie,
+  HiBell
 } from 'react-icons/hi';
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
@@ -97,6 +98,15 @@ export default function DashSidebar() {
                   Comments
                 </Sidebar.Item>
               </Link>
+              <Link to='/dashboard?tab=notifications'>
+                <Sidebar.Item
+                  active={tab === 'notifications'}
+                  icon={HiBell}
+                  as='div'
+                >
+                  Notifications
+                </Sidebar.Item>
+              </Link>              
             </>
           )}
           <Sidebar.Item
