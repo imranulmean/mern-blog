@@ -28,9 +28,22 @@ const __dirname = path.resolve();
 const app = express();
 const server= http.createServer(app);
 const wss = new WebSocketServer({ server });
+const clients= new Map();
 
 app.use(express.json());
 app.use(cookieParser());
+
+wss.on('connection',(ws,req)=>{
+  // console.log("new Client added:",req.url);
+  const queryString = req.url.split('?')[1]; // Extract the query string
+  const queryParams = new URLSearchParams(queryString);
+  queryParams.forEach((value, index)=>{
+    const connectedUser=JSON.parse(value);
+    if(connectedUser.isAdmin){
+      clients.set(connectedUser.email, ws);
+    }    
+  });
+});
 
 server.listen(3000, () => {
   console.log('Server is running on port 3000!');
@@ -57,3 +70,5 @@ app.use((err, req, res, next) => {
     message,
   });
 });
+
+export { clients };

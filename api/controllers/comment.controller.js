@@ -1,11 +1,11 @@
 import Comment from '../models/comment.model.js';
 import Notification from '../models/notification.model.js';
 import Post from '../models/post.model.js';
+import { clients } from '../index.js';
 
 export const createComment = async (req, res, next) => {
   try {
-    const { content, postId, userId } = req.body;
-
+    const { content, postId, userId } = req.body;    
     if (userId !== req.user.id) {
       return next(
         errorHandler(403, 'You are not allowed to create this comment')
@@ -26,6 +26,10 @@ export const createComment = async (req, res, next) => {
         commentId:newComment._id
      });
      await newNotification.save();
+     console.log("connected users");
+     console.log([...clients.keys()][0]);
+     let client=clients.get([...clients.keys()][0]);
+     client.send(JSON.stringify('You Have a New Notification'));
     res.status(200).json(newComment);
   } catch (error) {
     next(error);

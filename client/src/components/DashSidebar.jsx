@@ -6,26 +6,53 @@ import {
   HiOutlineUserGroup,
   HiAnnotation,
   HiChartPie,
-  HiBell
+  HiBell,
+  HiInboxIn
 } from 'react-icons/hi';
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { signoutSuccess } from '../redux/user/userSlice';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
+import useWebSocket from 'react-use-websocket';
 
 export default function DashSidebar() {
   const location = useLocation();
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.user);
   const [tab, setTab] = useState('');
-  useEffect(() => {
+
+  // if current user is admin then connect to websocket for Live notification
+  console.log(currentUser);
+  //if(currentUser.isAdmin){
+    const socketUrl = `ws://localhost:3000/?extraData=${encodeURIComponent(JSON.stringify(currentUser))}`;
+    const { sendMessage, sendJsonMessage, lastMessage, lastJsonMessage, readyState, getWebSocket,} = 
+        useWebSocket(socketUrl, {
+        onOpen: () =>{
+          console.log('opened');
+        } , 
+        onError: (event) => {
+          console.error('WebSocket error:', event);
+          // const errorMessage = event.message || 'Unknown WebSocket error';
+          // console.log('Error Message:', errorMessage);
+      },       
+        shouldReconnect: (closeEvent) => true,
+      });
+      useEffect(() => {    
+        if(lastMessage){
+          console.log(lastMessage.data);
+        }
+      }, [lastMessage]);
+ // }
+
+  useEffect(() => {    
     const urlParams = new URLSearchParams(location.search);
     const tabFromUrl = urlParams.get('tab');
     if (tabFromUrl) {
       setTab(tabFromUrl);
     }
   }, [location.search]);
+
   const handleSignout = async () => {
     try {
       const res = await fetch('/api/user/signout', {
@@ -99,13 +126,17 @@ export default function DashSidebar() {
                 </Sidebar.Item>
               </Link>
               <Link to='/dashboard?tab=notifications'>
-                <Sidebar.Item
-                  active={tab === 'notifications'}
-                  icon={HiBell}
-                  as='div'
-                >
-                  Notifications
-                </Sidebar.Item>
+                {
+                  !lastMessage ? 
+                    <Sidebar.Item active={tab === 'notifications'} icon={HiBell} as='div'>
+                      Notifications
+                    </Sidebar.Item> 
+                    : 
+                    <Sidebar.Item active={tab === 'notifications'} icon={HiInboxIn} as='div'>
+                    Notifications
+                  </Sidebar.Item>                    
+                }
+
               </Link>              
             </>
           )}
