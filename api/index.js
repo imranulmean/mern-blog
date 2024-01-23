@@ -8,6 +8,9 @@ import commentRoutes from './routes/comment.route.js';
 import notificationRoutes from './routes/notification.route.js';
 import cookieParser from 'cookie-parser';
 import path from 'path';
+import WebSocket,{ WebSocketServer }  from 'ws';
+import http from 'http';
+
 
 dotenv.config();
 
@@ -23,11 +26,13 @@ mongoose
 const __dirname = path.resolve();
 
 const app = express();
+const server= http.createServer(app);
+const wss = new WebSocketServer({ server });
 
 app.use(express.json());
 app.use(cookieParser());
 
-app.listen(3000, () => {
+server.listen(3000, () => {
   console.log('Server is running on port 3000!');
 });
 
