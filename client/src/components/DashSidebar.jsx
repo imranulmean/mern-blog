@@ -126,16 +126,9 @@ export default function DashSidebar() {
                 </Sidebar.Item>
               </Link>
               <Link to='/dashboard?tab=notifications'>
-                {
-                  !lastMessage ? 
-                    <Sidebar.Item active={tab === 'notifications'} icon={HiBell} as='div'>
+                    <Sidebar.Item active={tab === 'notifications'} icon={HiBell} as='div' style={lastMessage ? {"animation":"blink-animation 1s infinite"} : {}}>
                       Notifications
-                    </Sidebar.Item> 
-                    : 
-                    <Sidebar.Item active={tab === 'notifications'} icon={HiInboxIn} as='div'>
-                    Notifications
-                  </Sidebar.Item>                    
-                }
+                    </Sidebar.Item>
 
               </Link>              
             </>
