@@ -14,12 +14,14 @@ import { Link, useLocation } from 'react-router-dom';
 import { signoutSuccess } from '../redux/user/userSlice';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
+import { notificationTrue, notificationFalse } from '../redux/notification';
 import useWebSocket from 'react-use-websocket';
 
 export default function DashSidebar() {
   const location = useLocation();
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.user);
+  const { notification } = useSelector((state) => state.notification);
   const [tab, setTab] = useState('');
 
   // if current user is admin then connect to websocket for Live notification
@@ -41,6 +43,7 @@ export default function DashSidebar() {
       useEffect(() => {    
         if(lastMessage){
           console.log(lastMessage.data);
+          dispatch(notificationTrue());
         }
       }, [lastMessage]);
  // }
@@ -126,7 +129,7 @@ export default function DashSidebar() {
                 </Sidebar.Item>
               </Link>
               <Link to='/dashboard?tab=notifications'>
-                    <Sidebar.Item active={tab === 'notifications'} icon={HiBell} as='div' style={lastMessage ? {"animation":"blink-animation 1s infinite"} : {}}>
+                    <Sidebar.Item active={tab === 'notifications'} icon={HiBell} as='div' style={notification ? {"animation":"blink-animation 1s infinite"} : {}}>
                       Notifications
                     </Sidebar.Item>
 

@@ -1,14 +1,16 @@
 import { async } from '@firebase/util';
 import { Table } from 'flowbite-react';
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
+import { notificationFalse } from '../redux/notification';
 
 export default function DashNotifications() {
-  const { currentUser } = useSelector((state) => state.user);
+  const { currentUser } = useSelector((state) => state.user);  
   const [notifications, setNotifications]=useState([]);
   const [showMore, setShowMore] = useState(true);
+  const dispatch= useDispatch();
 
   useEffect(()=>{
     const fetchNotification= async()=> {
@@ -17,6 +19,7 @@ export default function DashNotifications() {
         const data = await res.json();
         if (res.ok) {
           setNotifications(data);
+          dispatch(notificationFalse());
           if (data.length < 9) {
             setShowMore(false);
           }
